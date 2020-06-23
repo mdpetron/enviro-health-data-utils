@@ -28,7 +28,26 @@ nata  <- read_excel("data/NATA14_cancer_bysrcgrp.xlsx")
 # make sure that our FIPs codes are in the right format
 nata$GEOID <- nata$Tract
 
-#Lets make some charts to 
+#What sources are most affecting Toxics Cancer Risk in CT? 
+#pull out the state row
+library(dplyr)
+library(tidyr)
+library(plotly)
+ct_summary <- nata %>% filter(GEOID == "09000000000")
+#reformat
+names(ct_summary)
+ct_summary <- ct_summary %>% select(8:45) %>% gather("Source", "Cancer Risk")
+
+#very simple visualization
+plot_ly(ct_summary, x = ~`Cancer Risk`, y = ~Source) %>% 
+  layout(margin = list(
+             l = 400
+             # r = 50,
+             # b = 100,
+             # t = 100,
+             # pad = 4
+           ))
+
 
 #lets make a map 
 
