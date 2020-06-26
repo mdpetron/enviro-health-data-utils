@@ -36,10 +36,11 @@ mean(ej_flag$FAC_PENALTY_COUNT, na.rm = T)
 mean(noej$FAC_PENALTY_COUNT, na.rm = T)
 
 #perform a Welch Two Sample t-test
+# https://uc-r.github.io/t_test
 t.test(ej_flag$FAC_PENALTY_COUNT,
        noej$FAC_PENALTY_COUNT)
 
 # the means are not equal, and ej areas have higher penalty counts...
-# of course, we need to check to see if we dont violate assumptions
+# of course, we need to check to see if we don't violate assumptions
 
 

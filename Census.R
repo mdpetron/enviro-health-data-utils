@@ -11,7 +11,7 @@ library(dplyr)
 census_api_key("3b7f443116b03bdd7ce2f1ff3f2b117cfff19e69")
 
 #investigate the acs variables 
-# v17 <- load_variables(2009, "acs5", cache = TRUE)
+ v17 <- load_variables(2009, "acs5", cache = TRUE)
 
 #here is a handy function with some data picked out
 censusGrab <- function(Year, state) {
@@ -85,6 +85,22 @@ library(sp)
 ct14 <- sp::merge(ct, ct14, by = "GEOID", all.x = T)
 names(ct14)
 
+poverty_risk_map <- tm_shape(ct14) +
+  tm_fill(col = "Poverty_Per",
+          title = "Poverty Percentage 2018",
+          alpha = 1) +
+  tm_borders() +
+  # tm_compass(type = "8star", position = c("left", "middle")) + 
+  tm_layout("2014 Poverty Percentage - Connecticut",
+            legend.position = c("left","top"),
+            bg.color = "white",
+            title.size = 1,
+            inner.margin = .13,
+            legend.title.size = 1)
+
+poverty_risk_map
+
+
 #make a dataframe
 ct14_df <- ct14@data
 #remove NA
@@ -92,7 +108,10 @@ ct14_df <- ct14_df %>% filter(complete.cases(ct14_df) == T)
 
 #poverty vs NATA
 library(plotly)
-plot_ly(ct14_df, x = ~Poverty_Per, y = ~`Total Cancer Risk (per million)`)
+plot_ly(ct14_df, x = ~Poverty_Per, y = ~`Total Cancer Risk (per million)`) %>%
+  layout(xaxis = list(tickformat = "%",
+                      title = "Poverty Percentage"))
+
 
 #correlation 
 cor(ct14_df$Poverty_Per, ct14_df$`Total Cancer Risk (per million)`)

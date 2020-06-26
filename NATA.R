@@ -8,6 +8,7 @@
 # Variable explanations: https://www.epa.gov/sites/production/files/2018-08/documents/explanation_of_data_elements_in_2014_nata_files.pdf
 
 #make a data folder in your repo
+setwd("/Users/Mike/Documents/GitHub/enviro-health-data-utils")
 dir.create("./data")
 
 #download the excel files from the EPA website
@@ -75,11 +76,11 @@ nata_cancer_risk_map <- tm_shape(ct) +
           alpha = 1) +
   tm_borders() +
   # tm_compass(type = "8star", position = c("left", "middle")) + 
-  tm_layout("2014 NATA Cancer Risk - Connecticut",
+  tm_layout("2014 National Air Toxics Assessment Cancer Risk - Connecticut",
             legend.position = c("left","top"),
             bg.color = "white",
             title.size = 1,
-            inner.margin = .1,
+            inner.margin = .13,
             legend.title.size = 1)
 
 nata_cancer_risk_map

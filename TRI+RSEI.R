@@ -45,9 +45,7 @@ library(plotly)
 plot_ly(ind_ts, x =~`1. YEAR`, y =~Releases, color = ~`19. INDUSTRY SECTOR`, mode = "lines")
 plot_ly(ind_ts, x =~`1. YEAR`, y =~Waste_Managed, color = ~`19. INDUSTRY SECTOR`, mode = "lines")
 
-#add top 50 facs to our NATA map 
-library(sf)
-
+#add facilities to our NATA map 
 topfacs <- tri_ct90to18_df %>% filter(`1. YEAR` == 2014) %>% group_by(`2. TRIFD`, `4. FACILITY NAME`, `12. LATITUDE`, `13. LONGITUDE`) %>%
   summarise(Releases = sum(`100. TOTAL RELEASES`),
             Waste_Managed = sum(`112. PRODUCTION WSTE (8.1-8.7)`))
@@ -66,3 +64,5 @@ leaflet(data = topfacs) %>%
   addMiniMap()
 
 #RSEI - see easy RSEI
+
+#are decline slopes dependent on EJ factors?
