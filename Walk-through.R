@@ -2,9 +2,10 @@
 #walk through
 
 #mac - install xcode
+#follow the first set of instructions that respond to this post
 #https://apple.stackexchange.com/questions/254380/why-am-i-getting-an-invalid-active-developer-path-when-attempting-to-use-git-a
 
-#pc - install Rtools
+#pc - install Rtools from this website
 #https://cran.r-project.org/bin/windows/Rtools/
 
 #install our packages (possibly the hardest part)
@@ -35,7 +36,7 @@ dir.create("./data")
 
 #NATA Respiratory Hazard, NATA Cancer Risk
 
-#For census data, let’s use %minority, per capita income, and % poverty.
+#For census data, let’s use %minority, income, and % poverty.
 
 #NATA download cancer and respiratory
 download.file("https://www.epa.gov/sites/production/files/2018-08/nata2014v2_national_cancerrisk_by_tract_srcgrp.xlsx",
