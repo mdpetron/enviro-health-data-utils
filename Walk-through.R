@@ -13,6 +13,8 @@ download.file("https://www.epa.gov/sites/production/files/2018-08/nata2014v2_nat
 #read into R
 install.packages("readxl")
 library(readxl)
+install.packages("dplyr")
+library(dplyr)
 
 nata_c  <- read_excel("data/NATA14_cancer_bysrcgrp.xlsx")
 nata_r  <- read_excel("data/NATA14_resp_bysrcgrp.xlsx")
@@ -30,9 +32,13 @@ nata_st <- left_join(nata_c_st, nata_r_st)
 #get 2014 census data
 
 #load packages (and/or install them)
+install.packages("tidycensus")
 library(tidycensus)
+install.packages("tidyr")
 library(tidyr)
+install.packages("dplyr")
 library(dplyr)
+
 #set API key
 census_api_key("3b7f443116b03bdd7ce2f1ff3f2b117cfff19e69")
 
