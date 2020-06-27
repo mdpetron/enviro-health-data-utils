@@ -1,23 +1,25 @@
 
 #walk through
 
+#mac - install xcode
+#https://apple.stackexchange.com/questions/254380/why-am-i-getting-an-invalid-active-developer-path-when-attempting-to-use-git-a
+
+#pc - install Rtools
+#https://cran.r-project.org/bin/windows/Rtools/
+
 #install our packages (possibly the hardest part)
 
 install.packages("readxl", dependencies = T)
 install.packages("dplyr", dependencies = T)
 install.packages("readr", dependencies = T)
-install.packages("rgdal", dependencies = T)
 install.packages("tidycensus", dependencies = T)
 install.packages("tidyr", dependencies = T)
 
 #trouble loading some packages? (no-zero exist status means it failed to load)
-#mac - install xcode
-#https://apple.stackexchange.com/questions/254380/why-am-i-getting-an-invalid-active-developer-path-when-attempting-to-use-git-a
-#pc
-#install Rtools
-#https://cran.r-project.org/bin/windows/Rtools/
 
-#Once installed, try to install them again
+# ask for help before moving forward. 
+
+#Once installed, read them into the work space
 
 library(tidycensus)
 library(tidyr)
@@ -30,7 +32,6 @@ getwd()
 
 #create a data folder in your working directory
 dir.create("./data")
-
 
 #NATA Respiratory Hazard, NATA Cancer Risk
 
