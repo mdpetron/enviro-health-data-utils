@@ -3,7 +3,7 @@
 #NATA Respiratory Hazard, NATA Cancer Risk
 
 #For census data, let’s use %minority, per capita income, and % poverty.
-
+dir.create("./data")
 #NATA download cancer and respiratory
 download.file("https://www.epa.gov/sites/production/files/2018-08/nata2014v2_national_cancerrisk_by_tract_srcgrp.xlsx",
               destfile = "data/NATA14_cancer_bysrcgrp.xlsx", mode="wb")
@@ -65,7 +65,7 @@ mydata <- left_join(acsYear3, nata_st, by = c("GEOID" = "Tract"))
   smoke$adultSmokeRate <- smoke$v009_rawvalue
   smoke$prematureDeathRate <- smoke$v001_numerator/smoke$v001_denominator
   smoke$GEOID <- smoke$fipscode
-  smoke <- smoke %>% select(GEOID, county, adultSmokeRate, prematureDeathRate, year)
+  smoke <- smoke %>% select(GEOID, county, adultSmokeRate, prematureDeathRate,year)
 
 #Merge with NATA and CENSUS by making a county fips code
 mydata$county_fip <- substr(mydata$GEOID, 1,5)
