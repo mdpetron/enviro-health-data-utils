@@ -61,10 +61,11 @@ mydata <- left_join(acsYear3, nata_st, by = c("GEOID" = "Tract"))
   url <- paste0("https://www.countyhealthrankings.org/sites/default/files/analytic_data", year, ".csv")
   chr <- read_csv(url, skip=1)
   chr$GEOID <- chr$fipscode
-  smoke <- chr %>% select(fipscode, county, year, v009_rawvalue)
+  smoke <- chr %>% select(fipscode, county, year, v009_rawvalue, v001_numerator, v001_denominator)
   smoke$adultSmokeRate <- smoke$v009_rawvalue
+  smoke$prematureDeathRate <- smoke$v001_numerator/smoke$v001_denominator
   smoke$GEOID <- smoke$fipscode
-  smoke <- smoke %>% select(GEOID, county, adultSmokeRate, year)
+  smoke <- smoke %>% select(GEOID, county, adultSmokeRate, prematureDeathRate, year)
 
 #Merge with NATA and CENSUS by making a county fips code
 mydata$county_fip <- substr(mydata$GEOID, 1,5)
