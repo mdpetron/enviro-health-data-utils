@@ -15,6 +15,8 @@ install.packages("readxl")
 library(readxl)
 install.packages("dplyr")
 library(dplyr)
+install.packages("readr")
+library("readr")
 
 nata_c  <- read_excel("data/NATA14_cancer_bysrcgrp.xlsx")
 nata_r  <- read_excel("data/NATA14_resp_bysrcgrp.xlsx")
@@ -36,8 +38,7 @@ install.packages("tidycensus")
 library(tidycensus)
 install.packages("tidyr")
 library(tidyr)
-install.packages("dplyr")
-library(dplyr)
+
 
 #set API key
 census_api_key("3b7f443116b03bdd7ce2f1ff3f2b117cfff19e69")
