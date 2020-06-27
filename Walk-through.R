@@ -1,9 +1,41 @@
+
 #walk through
+
+#install our packages (possibly the hardest part)
+
+install.packages("readxl", dependencies = T)
+install.packages("dplyr", dependencies = T)
+install.packages("readr", dependencies = T)
+install.packages("rgdal", dependencies = T)
+install.packages("tidycensus", dependencies = T)
+install.packages("tidyr", dependencies = T)
+
+#trouble loading some packages? (no-zero exist status means it failed to load)
+#mac - install xcode
+#https://apple.stackexchange.com/questions/254380/why-am-i-getting-an-invalid-active-developer-path-when-attempting-to-use-git-a
+#pc
+#install Rtools
+#https://cran.r-project.org/bin/windows/Rtools/
+
+#Once installed, try to install them again
+
+library(tidycensus)
+library(tidyr)
+library(dplyr)
+library(readxl)
+library(readr)
+
+#note your working directory (folder that you are saving things too)
+getwd()
+
+#create a data folder in your working directory
+dir.create("./data")
+
 
 #NATA Respiratory Hazard, NATA Cancer Risk
 
 #For census data, let’s use %minority, per capita income, and % poverty.
-dir.create("./data")
+
 #NATA download cancer and respiratory
 download.file("https://www.epa.gov/sites/production/files/2018-08/nata2014v2_national_cancerrisk_by_tract_srcgrp.xlsx",
               destfile = "data/NATA14_cancer_bysrcgrp.xlsx", mode="wb")
@@ -11,13 +43,6 @@ download.file("https://www.epa.gov/sites/production/files/2018-08/nata2014v2_nat
               destfile = "data/NATA14_resp_bysrcgrp.xlsx", mode="wb")
 
 #read into R
-install.packages("readxl")
-library(readxl)
-install.packages("dplyr")
-library(dplyr)
-install.packages("readr")
-library("readr")
-
 nata_c  <- read_excel("data/NATA14_cancer_bysrcgrp.xlsx")
 nata_r  <- read_excel("data/NATA14_resp_bysrcgrp.xlsx")
 
@@ -32,13 +57,6 @@ nata_r_st <- nata_r %>% filter(State == mystate) %>% select(Tract, `Total Respir
 nata_st <- left_join(nata_c_st, nata_r_st)
 
 #get 2014 census data
-
-#load packages (and/or install them)
-install.packages("tidycensus")
-library(tidycensus)
-install.packages("tidyr")
-library(tidyr)
-
 
 #set API key
 census_api_key("3b7f443116b03bdd7ce2f1ff3f2b117cfff19e69")
