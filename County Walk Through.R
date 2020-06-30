@@ -15,7 +15,7 @@ install.packages("dplyr", dependencies = T)
 install.packages("readr", dependencies = T)
 install.packages("tidycensus", dependencies = T)
 install.packages("tidyr", dependencies = T)
-
+install.packages("tidyr", dependencies = T)
 #trouble loading some packages? (no-zero exist status means it failed to load)
 
 # ask for help before moving forward. 
