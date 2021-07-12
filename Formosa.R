@@ -54,6 +54,7 @@ library(tigris)
 
 LAtr <- tracts(state = "LA")
 LAzip <- zctas(state = "LA")
+LAbg <- block_groups(state = "LA")
 
 LAzip <- readOGR("./tl_2018_us_zcta510", "tl_2018_us_zcta510")
 
@@ -481,9 +482,39 @@ TRIload <- function(year){
 
 tst <- TRIload(2019)
 
-tri_90to18 <- lapply(1990:2019, function (x)  TRIload(x))
+tri_90to18 <- lapply(1987:2019, function (x)  TRIload(x))
 tri_90to18_df <- tri_90to18[[1]]
 for (i in 2:length(tri_90to18)) tri_90to18_df <- rbind(tri_90to18_df, tri_90to18[[i]])
+
+steri <- tri_90to18_df %>% filter(grepl("STERIGENICS", `4. FACILITY NAME`) |
+                                    grepl("STERIGENICS", `15. PARENT CO NAME`))
+
+steri_2 <- tri_90to18_df %>% filter(grepl("STERI", `4. FACILITY NAME`),
+                                    !grepl("STERIS", `4. FACILITY NAME`)) %>%
+  filter(`34. CHEMICAL` == "Ethylene oxide")
+unique(par$`17. STANDARD PARENT CO NAME`)
+par <- steri_2 %>% group_by(`17. STANDARD PARENT CO NAME`, `1. YEAR`) %>%
+  summarise(avg_eto_stack = mean(`46. 5.2 - STACK AIR`, na.rm =T)) %>%
+  filter(`17. STANDARD PARENT CO NAME` %in% c("ALTAIR CORP",
+                                              "STERIGENICS US LLC",
+                                              "MIDWEST STERILIZATION CORP")) %>%
+  filter(`1. YEAR` > 1995)
+
+plot_ly(par, x = ~`1. YEAR`,
+        y = ~avg_eto_stack,
+        color =~`17. STANDARD PARENT CO NAME`,
+        mode = "lines+markers") %>%
+  layout(xaxis = list(range = c(2005, 2020),
+                      tickvals = c(2004:2019)))
+
+unique(steri$`34. CHEMICAL`)
+steri_eto <- steri %>% filter(`34. CHEMICAL` == "Ethylene oxide")
+
+plot_ly(steri_eto, x = ~`1. YEAR`,
+        y = ~`46. 5.2 - STACK AIR`+`45. 5.1 - FUGITIVE AIR`,
+        color =~`4. FACILITY NAME`,
+        mode = "lines") %>%
+  layout(xaxis = list(range = c(2005, 2019)))
 
 #facs in Lousiana 
 names(tri_90to18_df)
@@ -853,5 +884,77 @@ leaflet(cancer_tr) %>% addTiles() %>%
   addLegend(pal = pal, values = cancer_tr$CANCER,
             title = "All Site Cancer Risk 2014", position = "topright",
             opacity = 1)
+
+
+#here is the task 
+#grab data for these census blocks via ejscreen and RSEI 
+ca <- read_excel("~/GitHub/enviro-health-data-utils/data/tl_2019_22_tablock_ca5mi_full.xlsx")
+
+ca$ID <- substr(ca$GEOID10, 1, 12)
+
+#ejscreen data 
+EJscreen$CANCER <- as.numeric(EJscreen$CANCER)
+EJscreen$DSLPM <- as.numeric(EJscreen$DSLPM)
+EJscreen$RESP <- as.numeric(EJscreen$RESP)
+EJscreen$OZONE <- as.numeric(EJscreen$OZONE)
+EJscreen$PM25 <- as.numeric(EJscreen$PM25)
+
+EJscreen$place <- ifelse(EJscreen$ID %in% ca$ID, "Industrial Corridor", "Rest of USA")
+
+comp <- EJscreen %>% group_by(place) %>%
+  summarise_at(.vars = 3:37, .funs = mean, na.rm = T)
+
+#TRI 
+TRI_2019_US_1_ <- read_csv("C:/Users/Mike Petroni/Downloads/TRI_2019_US (1).csv")
+
+alley <- subset(LAbg, LAbg$GEOID %in% ca$ID)
+trila <- TRI_2019_US_1_ %>% filter(`8. ST` == "LA", !is.na(`13. LONGITUDE`)) %>% 
+  dplyr::select(2,3,4,5,6,7,12,13, 42) %>% distinct()
+coordinates(trila) <- c("13. LONGITUDE", "12. LATITUDE")
+CRS.new <- CRS("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0")
+proj4string(trila) <- CRS.new 
+pi <- rgeos::intersect(trila, alley)
+myfacs <- as.data.frame(pi)
+
+TRI_2019_US_1_$place <- ifelse(TRI_2019_US_1_$`2. TRIFD` %in% myfacs$X2..TRIFD, "Industrial Corridor", "Rest of USA")
+
+compTRI <- TRI_2019_US_1_ %>% group_by(place) %>%
+  summarise_at(.vars = c(101, 113), .funs = sum, na.rm = T)
+
+#ECHO
+echo <- read_csv("~/GitHub/enviro-health-data-utils/data/cancer_alley/ECHO_EXPORTER.csv")
+names(echo)
+echo_raw <- echo
+echo <- echo %>% filter(!is.na(FAC_LONG), !is.na(FAC_LAT))
+coordinates(echo) <- c("FAC_LONG", "FAC_LAT")
+CRS.new <- CRS("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0")
+proj4string(echo) <- CRS.new 
+
+pi <- rgeos::intersect(echo, alley)
+
+myecho <- as.data.frame(pi)
+
+
+echo_raw$place <- ifelse(echo_raw$REGISTRY_ID %in% myecho$REGISTRY_ID, "Industrial Corridor", "Rest of USA")
+names(echo_raw)
+compecho <- echo_raw %>% group_by(place) %>%
+  summarise_at(.vars = c(44, 40, 41, 33), .funs = mean, na.rm = T)
+
+#combine and export 
+
+compdf <- left_join(comp, compTRI)
+compdf <- left_join(compdf, compecho)
+ejalley <- EJscreen %>% filter(place == "Industrial Corridor")
+write.csv(compdf, "comparing LA industrial to USA.csv")
+write.csv(ejalley, "EJscreen LA industrial.csv")
+
+
+sum(ejalley$ACSTOTPOP)
+sum(EJscreen$ACSTOTPOP) - sum(ejalley$ACSTOTPOP)
+
+
+head(myecho)
+
+write.csv(myecho, "echoexporter_LA_industrial_corridor.csv")
 
             
